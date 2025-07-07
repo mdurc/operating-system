@@ -75,3 +75,4 @@ bios_print_done:
   hexstr db "0123456789ABCDEF"  ; hex digits lookup table
   outstr16 db "0000", 0         ; output of 2 byte word
   reg16 dw 0                    ; 2 byte word to print within printreg16
+  start_msg db "--start msg--", 0
