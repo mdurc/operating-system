@@ -1,4 +1,4 @@
-enable_keyhandler_int:
+setup_keyhandler:
   cli ; clear interrupts
   mov bx, 0x09  ; keyboard hardware interrupt request (IRQ1)
   shl bx, 2     ; multiply by 4 to get index in IVT (Interrupt Vector Table)
@@ -29,7 +29,7 @@ keyhandler:
 
   mov ax, [port60]      ; load the scan code saved earlier
   mov  WORD[reg16], ax  ; setup hex print
-  call printreg16
+  call hprint16
 keyhandler_done:
   iret ; return from interrupt
 

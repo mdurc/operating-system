@@ -8,8 +8,8 @@
 
   jmp start
 
-  %include "print.inc"
-  %include "keyhandler.inc"
+  %include "print16.inc"
+  %include "keyhandler16.inc"
 
 start:
   ; 'cs' is the code segment where instructions live
@@ -27,13 +27,15 @@ start:
   mov ax, 0xb800  ; 16 * 0xb800 is the desired address
   mov es, ax
 
-  mov si, start_msg
-  call sprint
-
-  mov si, start_msg
+  ; printing and enabling keyhandler driver for 16 bit real mode
+  mov si, start_msg16
+  call sprint16
+  mov si, start_msg16
   call bios_print
+  ;call setup_keyhandler
 
-  call enable_keyhandler_int
+  %include "protected_mode.inc"
+
   jmp $
 
   ; ===========
