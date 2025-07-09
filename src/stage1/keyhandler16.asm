@@ -20,18 +20,18 @@ keyhandler:
   mov bl, al            ; save in bl
   mov BYTE[port60], al  ; store scan code in variable port60
 
-  in al, 0x61   ; read keyboard controller port
+  in al, 0x61           ; read keyboard controller port
   mov ah, al
-  or al, 0x80   ; set bit 7 to disable keyboard clock
-  out 0x61, al  ; send it back
-  xchg ah, al   ; swap ah and al
-  out 0x61, al  ; restore original port value
+  or al, 0x80           ; set bit 7 to disable keyboard clock
+  out 0x61, al          ; send it back
+  xchg ah, al           ; swap ah and al
+  out 0x61, al          ; restore original port value
 
-  mov al, 0x20  ; send End of Interrupt (EOI) to PIC
+  mov al, 0x20          ; send End of Interrupt (EOI) to PIC
   out 0x20, al
 
-  and bl, 0x80  ; check if key released (bit 7 set)
-  jnz keyhandler_done      ; if key released, skip printing
+  and bl, 0x80          ; check if key released (bit 7 set)
+  jnz keyhandler_done   ; if key released, skip printing
 
   mov ax, [port60]      ; load the scan code saved earlier
   mov  WORD[reg16], ax  ; setup hex print

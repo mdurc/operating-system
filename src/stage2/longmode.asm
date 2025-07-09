@@ -4,9 +4,9 @@
   ; Checks whether CPU supports long mode or not.
   ; returns eax = 0 if long mode is not supported
 is_longmode_supported:
-  mov eax, 0x80000000 ; test if extended processor info in available.
-  cpuid               ; get CPU info
-  cmp eax, 0x80000001
+  mov eax, 0x80000000 ; load the highest extended CPUID function number
+  cpuid               ; get CPU info on supported extended functions
+  cmp eax, 0x80000001 ; check if function 0x80000001 is supported
   jb .not_supported
 
   mov eax, 0x80000001 ; after calling CPUID with EAX = 0x80000001,

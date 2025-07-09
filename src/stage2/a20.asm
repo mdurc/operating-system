@@ -93,8 +93,6 @@ check_a20:
   pop ax
   mov BYTE[es:di], al
 
-  sti ; re-enable interrupts for printing
-
   ; disabled
   mov ax, 0
   je .done

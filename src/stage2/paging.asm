@@ -10,19 +10,17 @@ enable_paging:
   mov edi, PAGING_DATA  ; Point edi to a free space to create the paging structures
 
   ; zero out the 16KiB buffer. since we are doing a rep stosd, count should be bytes/4.
-  push di                           ; REP STOSD alters DI.
+  push di ; REP STOSD alters DI.
   mov ecx, 0x1000
   xor eax, eax
   cld
   rep stosd
-  pop di                            ; Get DI back.
-
+  pop di ; Get DI back.
 
   ; Build the Page Map Level 4. es:di points to the Page Map Level 4 table.
   lea eax, [es:di + 0x1000]         ; Put the address of the Page Directory Pointer Table in to EAX.
   or eax, PAGE_PRESENT | PAGE_WRITE ; Or EAX with the flags - present flag, writable flag.
   mov [es:di], eax                  ; Store the value of EAX as the first PML4E.
-
 
   ; Build the Page Directory Pointer Table.
   lea eax, [es:di + 0x2000]         ; Put the address of the Page Directory in to EAX.
