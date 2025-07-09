@@ -1,3 +1,9 @@
+  [BITS 16]
+
+  port60 dw 0 ; for storing scan code from port 60 as keyboard data
+
+  ; ======================================
+
 setup_keyhandler:
   cli ; clear interrupts
   mov bx, 0x09  ; keyboard hardware interrupt request (IRQ1)
@@ -32,5 +38,3 @@ keyhandler:
   call hprint16
 keyhandler_done:
   iret ; return from interrupt
-
-  port60 dw 0 ; for storing scan code from port 60 as keyboard data

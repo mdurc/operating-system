@@ -1,5 +1,17 @@
+[BITS 16]
+
+  ; x and y coordinates to print characters to
+  xpos db 0
+  ypos db 0
+  hexstr db "0123456789ABCDEF"  ; hex digits lookup table
+
+  outstr16 db "0000", 0         ; output of 2 byte word
+  reg16 dw 0                    ; 2 byte word to print within hprint16
+  start_msg16 db "--16 bit real mode--", 0
+
   ; ======================================
   ; 16 bit real mode driver for printing the string's characters
+  ; si <- address to 16 bit null-terminated string
 sprint16:
   mov al, [si]        ; load current char
   inc si              ; move to next char
@@ -14,6 +26,7 @@ sprint16:
   ret
 
   ; 16 bit real mode driver for drawing character in al to current position: (xpos, ypos)
+  ; al <- character to print to video memory
 cprint16:
   mov ah, 0x0f          ; attrib = white on black
   ; now ax is the char in lower byte and attrib in upper
@@ -39,6 +52,7 @@ cprint16:
   ret
 
   ; driver for printing 16 bit register (2 byte word) in hex
+  ; outstr16 <- address to 16 bit null-terminated string
 hprint16:
   mov di, outstr16
   mov ax, [reg16]
@@ -72,15 +86,3 @@ bios_print:
   jmp bios_print
 .finish_print:
   ret
-
-  ; ======================================
-
-  ; x and y coordinates to print characters to
-  xpos db 0
-  ypos db 0
-  hexstr db "0123456789ABCDEF"  ; hex digits lookup table
-
-  outstr16 db "0000", 0         ; output of 2 byte word
-  reg16 dw 0                    ; 2 byte word to print within hprint16
-
-  start_msg16 db "--16 bit real mode--", 0

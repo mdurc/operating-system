@@ -1,10 +1,10 @@
-all: boot
+all: os
 
-boot: boot.asm .force-rebuild
-	nasm -fbin boot.asm -o boot.bin
+os: os.asm .force-rebuild
+	nasm -fbin os.asm -o os.bin
 
-start: boot
-	qemu-system-x86_64 -drive format=raw,file=boot.bin
+start: os
+	qemu-system-x86_64 -drive format=raw,file=os.bin
 
 clean:
 	rm *.bin

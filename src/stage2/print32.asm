@@ -1,5 +1,12 @@
+  [BITS 32]
+
+  outstr32 db "00000000", 0     ; output of 4 byte dword
+  reg32 dd 0                    ; 4 byte dword to print within hprint32
+  start_msg32 db "--32 bit protected mode--", 0
+
   ; ======================================
   ; 32 bit protected mode driver for printing the string's characters
+  ; esi <- address to 32 bit null-terminated string
 sprint32:
   movzx eax, BYTE[esi]
   inc esi
@@ -13,6 +20,7 @@ sprint32:
   ret
 
   ; 32 bit protected mode driver for drawing character in al to current position: (xpos, ypos)
+  ; al <- character to print to video memory
 cprint32:
   mov ah, 0x0f
   mov ecx, eax
@@ -32,6 +40,7 @@ cprint32:
   ret
 
   ; driver for printing 32 bit register (4 byte dword) in hex
+  ; outstr32 <- address to 32 bit null-terminated string
 hprint32:
   mov edi, outstr32
   mov eax, [reg32]
@@ -49,10 +58,3 @@ hprint32:
   mov esi, outstr32
   call sprint32
   ret
-
-  ; ======================================
-
-  outstr32 db "00000000", 0     ; output of 4 byte dword
-  reg32 dd 0                    ; 4 byte dword to print within hprint32
-
-  start_msg32 db "--32 bit protected mode--", 0
