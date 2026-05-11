@@ -1,0 +1,17 @@
+extern func hprint64(); // from print64.asm
+
+func kernel_main() {
+  mut vga_buffer := cast<ptr<mut u16>>(753664); // 0xb8000 from print64.asm
+
+  // 'M' in light green (0x0A) on black background (0x00) -> 0x0A4D
+  vga_buffer[0] = cast<u16>(2637);
+
+  // 'D' in light green -> 0x0A44
+  vga_buffer[1] = cast<u16>(2628);
+  hprint64();
+
+  // infinite loop to halt the kernel
+  while (true) {
+    asm {  hlt ; infinite loop};
+  }
+}

@@ -45,33 +45,7 @@ kernel_entry:
   mov rax, 0x1f6c1f651f6e1f72
   mov [edi + 16], rax
 
-  ;mov eax, 1
-  ;mov ecx, 0
-  ;div ecx
+  jmp _kernel_main ; function defined in mylang (prefex appended by compiler)
 
-  ;.halt: hlt
-  ;jmp .halt
-
-  .loop:
-  mov BYTE[ypos], 12
-  mov rsi, ticks_msg
-  mov dl, VGA_COLOR_LIGHT_GREEN
-  call sprint64
-
-  mov BYTE[ypos], 12
-  mov [xpos], BYTE 21
-  mov r8, QWORD[systimer_ticks]
-  mov QWORD[reg64], r8
-  call hprint64
-
-  mov BYTE[ypos], 14
-  mov rsi, scancode_msg
-  mov dl, VGA_COLOR_LIGHT_CYAN
-  call sprint64
-
-  mov BYTE[ypos], 14
-  mov [xpos], BYTE 21
-  mov r8, QWORD[keyboard_scancode]
-  mov QWORD[reg64], r8
-  call hprint64
-  jmp .loop
+  .halt: hlt
+  jmp .halt

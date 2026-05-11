@@ -10,5 +10,6 @@ stage2_end:
 
 kernel_start:
   %include "kernel/kernel.asm"
+  %include "kernel_entry.asm" ; built from kernel/kernel_entry.sn
   align 512, db 0
 kernel_end:

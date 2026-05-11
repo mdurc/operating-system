@@ -1,4 +1,5 @@
   [BITS 64]
+  DEFAULT REL
 
   ; Interrupt Service Routines
 
