@@ -45,8 +45,8 @@ start:
   call load_disk
 
   ; real mode printing
-  mov si, start_msg16
-  call bios_print
+  ; mov si, start_msg16
+  ; call bios_print
   mov si, start_msg16
   call sprint16
   ;call setup_keyhandler

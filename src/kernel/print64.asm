@@ -24,13 +24,24 @@
   VGA_COLOR_LIGHT_BROWN equ 14
   VGA_COLOR_WHITE equ 15
 
+  ; rax -> VGA_WIDTH (80)
+get_vga_width:
+  mov rax, VGA_WIDTH
+  ret
+
+; rax -> VGA_HEIGHT (25)
+get_vga_height:
+  mov rax, VGA_HEIGHT
+  ret
+
   ; 64 bit video graphics driver
   ; ======================================
-  ; rax <- (XY ZZ XY ZZ XY ZZ XY ZZ),
+  ; rdi <- (XY ZZ XY ZZ XY ZZ XY ZZ),
   ; X is 4 bit background color,
   ; Y is 4 bit character color,
   ; ZZ is ascii code byte of character to fill the screen with
 fill_background:
+  mov rax, rdi
   mov rdi, 0xb8000
   ; each screen cell is 2 bytes (char + attrib),
   ; so the total size is actually width*height*2,
@@ -40,9 +51,9 @@ fill_background:
   ; rax is the value to store
   ; rdi is the destination address
   ; rcx is the number of qwords to store
+  cld
   rep stosq
   ret
-
 
   ; rsi <- address to 64 bit null-terminated string
   ; dl <- attribute

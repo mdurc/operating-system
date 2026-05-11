@@ -1,17 +1,56 @@
-extern func hprint64(); // from print64.asm
+extern func fill_background(pattern: u64);
+extern func get_vga_width() returns (width: u64);
+extern func get_vga_height() returns (height: u64);
+
+enum VgaColor {
+  Black = 0x00,
+  Blue = 0x01,
+  Green = 0x02,
+  Cyan = 0x03,
+  Red = 0x04,
+  Magenta = 0x05,
+  Brown = 0x06,
+  LightGray = 0x07,
+  DarkGray = 0x08,
+  LightBlue = 0x09,
+  LightGreen = 0x0A,
+  LightCyan = 0x0B,
+  LightRed = 0x0C,
+  LightMagenta = 0x0D,
+  Yellow = 0x0E,
+  White = 0x0F
+}
+
+func clear_screen() {
+  // 0x0f20 is a white-on-black space (4 times to fit 64-bits)
+  pattern : u64 = 0x0f200f200f200f20;
+  fill_background(pattern);
+}
+
+func put_char(x: u32, y: u32, c: u8, fg: u8, bg: u8) {
+  width := get_vga_width();
+  height := get_vga_height();
+  if (x >= width or y >= height) { return; }
+
+  mut vga := cast<ptr<mut u16>>(0xb8000);
+  mut offset := (y * width) + x;
+
+  mut color := (bg << 4) | fg;
+  mut attr := cast<u16>(color) << 8;
+  mut char_val := cast<u16>(c);
+
+  vga[offset] = attr | char_val;
+}
 
 func kernel_main() {
-  mut vga_buffer := cast<ptr<mut u16>>(753664); // 0xb8000 from print64.asm
+  clear_screen();
 
-  // 'M' in light green (0x0A) on black background (0x00) -> 0x0A4D
-  vga_buffer[0] = cast<u16>(2637);
+  put_char(0, 0, 'M', VgaColor::LightGreen.tag, VgaColor::Black.tag);
+  for (mut i := 1; i < 20; i = i + 1) {
+    put_char(i, i, 'D', VgaColor::LightGreen.tag, VgaColor::Black.tag);
+  }
 
-  // 'D' in light green -> 0x0A44
-  vga_buffer[1] = cast<u16>(2628);
-  hprint64();
-
-  // infinite loop to halt the kernel
   while (true) {
-    asm {  hlt ; infinite loop};
+    asm { hlt ; infinite loop };
   }
 }

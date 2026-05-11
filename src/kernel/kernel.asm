@@ -30,8 +30,13 @@ kernel_entry:
   mov dl, 0x1f
   call sprint64
 
-  ;mov rax, 0x0020002000200020
-  ;call fill_background
+  ; mov rax, 0x0020002000200020
+  ; call fill_background
+
+  ; print a 64 bit register
+  mov rbx, 0xDEADBEEFCAFEC0DE
+  mov [reg64], rbx
+  call hprint64
 
   ; access the color text video memory VRAM address
   mov edi, 0xb8000 + ROW_OFFSET
@@ -49,3 +54,27 @@ kernel_entry:
 
   .halt: hlt
   jmp .halt
+
+; Taken from mylang compiler runtime asm:
+
+; rdi <- dst
+; rsi <- src
+; rdx <- size
+memcpy:
+  mov rax, rdi
+  mov rcx, rdx
+  cld           ; clear direction flag
+  rep movsb     ; copy rcx bytes (this clobbers rdi, rsi, and rcx)
+  ret           ; rax holds original dst
+
+; rdi <- dst
+; rsi <- value
+; rdx <- size
+memset:
+	mov r8, rdi
+	mov rax, rsi
+	mov rcx, rdx
+	cld           ; clear direction flag
+	rep stosb     ; fill memory (clobbers rdi and rcx)
+	mov rax, r8   ; restore original dst
+	ret
