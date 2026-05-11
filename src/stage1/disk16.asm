@@ -24,18 +24,17 @@ DAP:
   ; loads disk sectors into memory (int 13h, function code 42h)
 load_disk:
   .chunk:
-  cmp cx, 127     ; this is the max sectors to read in one call
+  cmp cx, 16      ; this is the max sectors to read in one call (8KB)
   jbe .load
 
   pusha           ; save current register states
-  mov cx, 127
-  call load_disk  ; read the 127 sectors and then restore state
+  mov cx, 16
+  call load_disk  ; read the 16 sectors and then restore state
   popa
 
-  add dx, 127 * 512 / 16  ; point to the next memory buffer after the 127 sectors
-  sub cx, 127             ; decrease sectors left to read
-  jmp .load
-
+  add dx, 0x0800  ; advance the segment register by 8KB (0x0800 paragraphs)
+  sub cx, 16      ; decrease sectors left to read
+  jmp .chunk      ; loop back to load the rest
 
   .load:
   mov [DAP.LBA_lower], ax

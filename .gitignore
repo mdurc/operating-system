@@ -1,3 +1,4 @@
 *.o
 *.bin
-kernel_entry.asm
+main.asm
+LOG.txt

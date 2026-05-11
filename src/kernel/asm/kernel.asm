@@ -1,7 +1,7 @@
   [BITS 64]
-  %include "kernel/idt.asm"
-  %include "kernel/isr.asm"
-  %include "kernel/print64.asm"
+  %include "kernel/asm/idt.asm"
+  %include "kernel/asm/isr.asm"
+  %include "kernel/asm/print64.asm"
   %define LINE_NUM 5
   %define ROW_OFFSET (LINE_NUM * 80 * 2 + 80 - 12)
 
@@ -54,6 +54,14 @@ kernel_entry:
 
   .halt: hlt
   jmp .halt
+
+; rdi <- port (16-bit)
+; rsi <- value (8-bit)
+outb:
+  mov dx, di    ; Load port into dx
+  mov ax, si    ; Load value into al
+  out dx, al    ; Output byte in al to I/O port dx
+  ret
 
 ; Taken from mylang compiler runtime asm:
 

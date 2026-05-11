@@ -1,0 +1,120 @@
+extern func outb(port: u16, val: u8);
+
+extern func fill_background(pattern: u64);
+extern func get_vga_width() returns (width: u64);
+extern func get_vga_height() returns (height: u64);
+
+enum VgaColor {
+  Black = 0x00,
+  Blue = 0x01,
+  Green = 0x02,
+  Cyan = 0x03,
+  Red = 0x04,
+  Magenta = 0x05,
+  Brown = 0x06,
+  LightGray = 0x07,
+  DarkGray = 0x08,
+  LightBlue = 0x09,
+  LightGreen = 0x0A,
+  LightCyan = 0x0B,
+  LightRed = 0x0C,
+  LightMagenta = 0x0D,
+  Yellow = 0x0E,
+  White = 0x0F
+}
+
+struct VgaContext {
+  width: u32,
+  height: u32,
+  cursor_x: u32,
+  cursor_y: u32,
+  fg_color: u8,
+  bg_color: u8
+}
+
+func disable_cursor() {
+  outb(0x3D4, 0x0A);
+  outb(0x3D5, 0x20);
+}
+
+func update_cursor(ctx: ptr<mut VgaContext>) {
+  mut offset := (ctx.cursor_y * ctx.width) + ctx.cursor_x;
+
+  // send the low byte of the offset
+  outb(0x3D4, 0x0F);
+  outb(0x3D5, cast<u8>(offset & 0xFF));
+
+  // send the high byte of the offset
+  outb(0x3D4, 0x0E);
+  outb(0x3D5, cast<u8>((offset >> 8) & 0xFF));
+}
+
+/* clear the screen the context background color and reset the cursor */
+func clear_screen(ctx: ptr<mut VgaContext>) {
+  mut color := (ctx.bg_color << 4) | ctx.fg_color;
+  mut attr := cast<u16>(color) << 8;
+  mut space := cast<u16>(' ');
+
+  mut entry := cast<u64>(attr | space);
+  mut pattern := entry | (entry << 16) | (entry << 32) | (entry << 48);
+
+  // 0x0f20 is a white-on-black space (4 times to fit 64-bits)
+  // pattern : u64 = 0x0f200f200f200f20;
+
+  fill_background(pattern);
+  ctx.cursor_x = 0;
+  ctx.cursor_y = 0;
+  update_cursor(ctx);
+}
+
+/* put the char into the vga buffer */
+func put_char(x: u32, y: u32, c: u8, fg: u8, bg: u8) {
+  mut vga := cast<ptr<mut u16>>(0xb8000);
+  mut offset := (y * get_vga_width()) + x;
+
+  mut color := (bg << 4) | fg;
+  mut attr := cast<u16>(color) << 8;
+  mut char_val := cast<u16>(c);
+
+  vga[offset] = attr | char_val;
+}
+
+/* put char at the current location of the cursor */
+func enter_char(ctx: ptr<mut VgaContext>, c: u8) {
+  if (ctx.cursor_x >= ctx.width or ctx.cursor_y >= ctx.height) { return; }
+
+  put_char(ctx.cursor_x, ctx.cursor_y, c, ctx.fg_color, ctx.bg_color);
+
+  // advance the cursor
+  ctx.cursor_x = ctx.cursor_x + 1;
+  if (ctx.cursor_x >= ctx.width) {
+    ctx.cursor_x = 0;
+    ctx.cursor_y = ctx.cursor_y + 1;
+    if (ctx.cursor_y >= ctx.height) {
+      ctx.cursor_y = 0;
+    }
+  }
+
+  update_cursor(ctx);
+}
+
+func kernel_main() {
+  mut ctx: VgaContext;
+  ctx.width = cast<u32>(get_vga_width());
+  ctx.height = cast<u32>(get_vga_height());
+  ctx.cursor_x = 0;
+  ctx.cursor_y = 0;
+  ctx.fg_color = VgaColor::LightGreen.tag;
+  ctx.bg_color = VgaColor::Black.tag;
+
+  clear_screen(&mut ctx);
+
+  enter_char(&mut ctx, 'M');
+  enter_char(&mut ctx, 'A');
+  enter_char(&mut ctx, 'T');
+  enter_char(&mut ctx, 'T');
+
+  while (true) {
+    asm { hlt ; infinite loop };
+  }
+}
