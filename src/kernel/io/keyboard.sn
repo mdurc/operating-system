@@ -117,7 +117,7 @@ func enter_char(ctx: ptr<mut VgaContext>, c: u8) {
     }
   }
 
-  if (ctx.cursor_y >= ctx.height or c == 97) {
+  if (ctx.cursor_y >= ctx.height) {
     ctx.cursor_y = 0;
   }
 
