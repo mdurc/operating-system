@@ -1,6 +1,14 @@
 #include "io/display.sn"
 #include "io/keyboard.sn"
 
+func print_string(ctx: ptr<mut VgaContext>, str: string) {
+  mut i: u32 = 0;
+  while (str[i] != 0) {
+    enter_char(ctx, str[i]);
+    i = i + 1;
+  }
+}
+
 func kernel_main() {
   mut ctx: VgaContext;
   ctx.width = cast<u32>(get_vga_width());
@@ -12,10 +20,11 @@ func kernel_main() {
 
   clear_screen(&mut ctx);
 
-  enter_char(&mut ctx, 'M');
-  enter_char(&mut ctx, 'A');
-  enter_char(&mut ctx, 'T');
-  enter_char(&mut ctx, 'T');
+  print_string(&mut ctx, "\n");
+  print_string(&mut ctx, "       O      M Y L A N G   O S\n");
+  print_string(&mut ctx, "      /|\\  x86_64 operating system\n");
+  print_string(&mut ctx, "      / \\     written in mylang\n");
+  print_string(&mut ctx, "\n  > ");
 
   mut shift_pressed := false;
   mut caps_lock := false;

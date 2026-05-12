@@ -1,3 +1,6 @@
+<img src="res/display.png" width="75%">
+
+```
 x86_64 OS
 * boots from the hardware, establishes virtual memory, configures interrupts, passes control to higher level kernel written in `mylang`
 * mylang is a custom language I made that is compiled into freestanding x86_64 assembly, `.sn` file extension
@@ -57,7 +60,7 @@ Stage 4:
 - [x] Use mylang pointers to interface directly with physical VGA memory.
 
 TODO:
-- [ ] Keyboard input translation driver
+- [x] Keyboard input translation driver
       * map PS/2 scancodes to ascii characters
       * ring buffer
       * implement basic text-editing: backspace, scrolling, etc
@@ -65,3 +68,4 @@ TODO:
   - [ ] Physical memory manager to hand out 4KB page frames
   - [ ] Virtual memory manager to map new pages dynamically
 - [ ] Some sort of filesystem to read and write data to hard drive
+```
