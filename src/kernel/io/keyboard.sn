@@ -8,6 +8,8 @@ func scancode_to_ascii(code: u8, shift: bool, caps: bool) returns (char: u8) {
   }
 
   switch (code) {
+    case 0x0E: { return 8; } // backspace
+
     // numbers and symbols (only affected by shift)
     case 0x02: { if (shift) { return '!'; } else { return '1'; } }
     case 0x03: { if (shift) { return '@'; } else { return '2'; } }
@@ -92,8 +94,18 @@ func update_cursor(ctx: ptr<mut VgaContext>) {
 func enter_char(ctx: ptr<mut VgaContext>, c: u8) {
   if (ctx.cursor_x >= ctx.width or ctx.cursor_y >= ctx.height) { return; }
 
-  // Handle ASCII 10 (Line Feed / Enter)
-  if (c == 10) {
+  if (c == 8) { // backspace
+    if (ctx.cursor_x == 0) {
+      if (ctx.cursor_y > 0) {
+        ctx.cursor_y = ctx.cursor_y - 1;
+        ctx.cursor_x = ctx.width - 1;
+      }
+    } else {
+      ctx.cursor_x = ctx.cursor_x - 1;
+    }
+    // erase the character at the new cursor location
+    put_char(ctx.cursor_x, ctx.cursor_y, ' ', ctx.fg_color, ctx.bg_color);
+  } else if (c == 10) { // newline
     ctx.cursor_x = 0;
     ctx.cursor_y = ctx.cursor_y + 1;
   } else {
@@ -105,7 +117,7 @@ func enter_char(ctx: ptr<mut VgaContext>, c: u8) {
     }
   }
 
-  if (ctx.cursor_y >= ctx.height) {
+  if (ctx.cursor_y >= ctx.height or c == 97) {
     ctx.cursor_y = 0;
   }
 
