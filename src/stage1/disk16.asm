@@ -16,25 +16,25 @@ DAP:
   boot_msg db "Booting Stage 2...", 0
   disk_err_msg db "Disk Error!", 0
 
-  ; ======================================
+; ======================================
   ; ax <- start of sector
   ; cx <- number of sectors (512 bytes) to load
   ; bx <- offset of buffer
   ; dx <- segment of buffer
-  ; loads disk sectors into memory (int 13h, function code 42h)
 load_disk:
   .chunk:
-  cmp cx, 16      ; this is the max sectors to read in one call (8KB)
-  jbe .load
+  cmp cx, 0       ; Check if there are sectors left to read
+  je .done
 
-  pusha           ; save current register states
-  mov cx, 16
-  call load_disk  ; read the 16 sectors and then restore state
-  popa
+  pusha           ; Save registers (preserves the remaining cx count)
+  mov cx, 1       ; Read exactly 1 sector (512 bytes)
+  call .load
+  popa            ; Restore registers 
 
-  add dx, 0x0800  ; advance the segment register by 8KB (0x0800 paragraphs)
-  sub cx, 16      ; decrease sectors left to read
-  jmp .chunk      ; loop back to load the rest
+  add ax, 1       ; Advance LBA head by 1 sector
+  add dx, 0x0020  ; Advance buffer segment by 512 bytes (0x20 paragraphs)
+  dec cx          ; Decrement remaining sectors
+  jmp .chunk
 
   .load:
   mov [DAP.LBA_lower], ax
@@ -51,6 +51,8 @@ load_disk:
   .print_error:
   mov si, disk_err_msg
   call sprint16
-
   .halt: hlt
   jmp .halt
+
+  .done:
+  ret

@@ -12,6 +12,6 @@ start: os
 	qemu-system-x86_64 -drive format=raw,file=os.bin -d int,cpu_reset -no-reboot > LOG.txt 2>&1
 
 clean:
-	rm -f os.bin main.asm
+	rm -f os.bin main.asm LOG.txt
 
 .PHONY: start, clean, .force-rebuild

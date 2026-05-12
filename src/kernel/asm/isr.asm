@@ -101,3 +101,10 @@ ISR_keyboard:
   out PIC1_COMMAND, al
   pop rax
   iretq
+
+; al/rax <- current scancode
+get_keyboard_scancode:
+  xor rax, rax
+  mov al, byte [keyboard_scancode]
+  mov byte [keyboard_scancode], 0
+  ret

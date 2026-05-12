@@ -2,3 +2,4 @@
 *.bin
 main.asm
 LOG.txt
+.DS_Store

@@ -26,7 +26,7 @@ start:
   xor ax, ax
   mov ds, ax      ; data segment
   mov ss, ax      ; stack segment
-  mov sp, 0x9c00  ; stack pointer growing downward, 2000h past code start
+  mov sp, 0x7c00  ; stack pointer growing downward, 2000h past code start
   mov fs, ax      ; extra segment register
   mov gs, ax      ; extra segment register
 

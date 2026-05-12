@@ -12,9 +12,9 @@ kernel_entry:
   cli               ; no interrupts
   lidt [idt_descriptor]
 
-  mov al, 0x80       ; OCW1: Unmask all interrupts at master PIC
+  mov al, 0xFC       ; OCW1: Unmask IRQ0 (Timer) and IRQ1 (Keyboard)
   out PIC1_DATA, al
-  mov al, 0x80       ; OCW1: Unmask all interrupts at master PIC
+  mov al, 0xFF       ; OCW1: Mask all interrupts on slave PIC
   out PIC2_DATA, al
 
   sti ; enable interrupts

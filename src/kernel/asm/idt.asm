@@ -8,15 +8,13 @@
   ; Consists of 256 interrupt vectors, the first 32 of which (0-31 or 0x00-0x1F)
   ; are used for processor exceptions.
 
-  BASE_OF_SECTION equ 0x8000
-
-  %macro .idtentry 3
-  dw ((BASE_OF_SECTION + %1 - $$) & 0xFFFF) - 1024    ; Low word bits (0-15) of offset
+%macro .idtentry 3
+  dw ((0x7C00 + %1 - $$) & 0xFFFF)                    ; Low word bits (0-15) of offset
   dw %2                                               ; Code-Segment-Selector
   db 0                                                ; Always zero
   db %3                                               ; Type and Attributes
-  dw ((BASE_OF_SECTION + %1 - $$) >> 16) & 0xFFFF     ; Middle bits (16-31) of offset
-  dd ((BASE_OF_SECTION + %1 - $$) >> 32) & 0xFFFFFFFF ; High bits (32-64) of offset
+  dw (((0x7C00 + %1 - $$) >> 16) & 0xFFFF)            ; Middle bits (16-31) of offset
+  dd (((0x7C00 + %1 - $$) >> 32) & 0xFFFFFFFF)        ; High bits (32-64) of offset
   dd 0                                                ; Reserved
   %endmacro
 

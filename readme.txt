@@ -57,9 +57,11 @@ Stage 4:
 - [x] Use mylang pointers to interface directly with physical VGA memory.
 
 TODO:
-- [ ] Parse basic memory map from BIOS/UEFI (e820) to find usable RAM.
-- [ ] Initialize a Physical Memory Manager to hand out 4KB page frames.
-- [ ] Initialize a Virtual Memory Manager to map new pages dynamically.
-- [ ] Build a custom Heap Allocator in mylang.
-- [ ] Build a basic process scheduler (round-robin or similar).
-- [ ] Implement context switching and standard threading.
+- [ ] Keyboard input translation driver
+      * map PS/2 scancodes to ascii characters
+      * ring buffer
+      * implement basic text-editing: backspace, scrolling, etc
+- [ ] Heap allocator for malloc/free implementations
+  - [ ] Physical memory manager to hand out 4KB page frames
+  - [ ] Virtual memory manager to map new pages dynamically
+- [ ] Some sort of filesystem to read and write data to hard drive
